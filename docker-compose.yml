@@ -1,0 +1,37 @@
+version: '3.0'
+
+services:
+  main:
+    container_name: main-jam
+    stdin_open: true
+    build:
+      context: .
+    env_file:
+      - .env.local
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 3001:3000
+    restart: on-failure
+    command: npm run start:dev
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres-jam
+    image: postgres:12
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 7432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:    
