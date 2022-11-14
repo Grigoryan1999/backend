@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteQueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import ProductDto from './product.dto';
 import Product from './product.entity';
 
@@ -47,28 +47,36 @@ export class ProductService {
   }
 
   async update(uuid: string, product: ProductDto) {
-    try {
-      await this.productRepository.update(
-        { uuid },
-        {
-          name: product.name,
-          subscription: product.subscription,
-          drink: product.drink,
-        },
-      );
-    } catch (e) {
+    const updatedProduct = await this.productRepository.findOne({
+      where: { uuid },
+    });
+
+    if (!updatedProduct) {
       throw new HttpException('Product was not found', HttpStatus.NOT_FOUND);
     }
+
+    await this.productRepository.update(
+      { uuid },
+      {
+        name: product.name,
+        subscription: product.subscription,
+        drink: product.drink,
+      },
+    );
 
     return true;
   }
 
   async deleteById(uuid: string) {
-    try {
-      await this.productRepository.delete({ uuid });
-    } catch (e) {
+    const deletedProduct = await this.productRepository.findOne({
+      where: { uuid },
+    });
+
+    if (!deletedProduct) {
       throw new HttpException('Product was not found', HttpStatus.NOT_FOUND);
     }
+
+    await this.productRepository.delete({ uuid });
 
     return true;
   }

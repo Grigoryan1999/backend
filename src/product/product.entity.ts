@@ -1,3 +1,4 @@
+import { IEntity } from './../../dist/shared/shared-entities.d';
 import {
   Column,
   Entity,
@@ -9,7 +10,7 @@ import {
 import Category from 'src/category/category.entity';
 
 @Entity()
-export default class Product {
+export default class Product implements IEntity {
   @PrimaryGeneratedColumn()
   uuid: string;
 
