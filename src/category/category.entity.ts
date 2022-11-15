@@ -1,6 +1,9 @@
+import Product from 'src/product/product.entity';
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,6 +18,10 @@ export default class Category {
 
   @Column({ nullable: false })
   subscription: string;
+
+  @ManyToMany(() => Product)
+  @JoinTable()
+  products: Product[];
 
   @UpdateDateColumn({
     type: 'timestamp',

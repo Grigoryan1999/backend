@@ -1,8 +1,6 @@
-import { IEntity } from './../../dist/shared/shared-entities.d';
 import {
   Column,
   Entity,
-  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -10,7 +8,7 @@ import {
 import Category from 'src/category/category.entity';
 
 @Entity()
-export default class Product implements IEntity {
+export default class Product {
   @PrimaryGeneratedColumn()
   uuid: string;
 
@@ -24,8 +22,7 @@ export default class Product implements IEntity {
   drink: boolean;
 
   @ManyToMany(() => Category)
-  @JoinTable()
-  categoryes: Category[];
+  categories: Category[];
 
   @UpdateDateColumn({
     type: 'timestamp',

@@ -38,6 +38,24 @@ export class ProductController {
     };
   }
 
+  @Post('add-to-category')
+  async addToCategory(@Body() body) {
+    const response = await this.productService.addToCategory(
+      body.productUuid,
+      body.categoryUuid,
+    );
+    return response;
+  }
+
+  @Post('remove-from-category')
+  async removeToCategory(@Body() body) {
+    const response = await this.productService.removeFromCategory(
+      body.productUuid,
+      body.categoryUuid,
+    );
+    return response;
+  }
+
   @Put(':uuid')
   async update(@Param('uuid') uuid: string, @Body() body: ProductDto) {
     const response = await this.productService.update(uuid, body);

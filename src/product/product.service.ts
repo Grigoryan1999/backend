@@ -1,20 +1,22 @@
+import { Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import ProductDto from './product.dto';
 import Product from './product.entity';
+import Category from 'src/category/category.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async getAll() {
     const products = await this.productRepository
       .createQueryBuilder('product')
-      .innerJoinAndSelect('product.categoryes', 'categoryes')
       .getMany();
 
     return products;
@@ -23,7 +25,6 @@ export class ProductService {
   async getByUuid(uuid: string) {
     const product = await this.productRepository
       .createQueryBuilder('product')
-      .innerJoinAndSelect('product.categoryes', 'categoryes')
       .where('product.uuid = :uuid', { uuid })
       .getOne();
 
@@ -77,6 +78,66 @@ export class ProductService {
     }
 
     await this.productRepository.delete({ uuid });
+
+    return true;
+  }
+
+  async addToCategory(productUuid: string, categoryUuid: string) {
+    const product = await this.productRepository.findOne({
+      where: { uuid: productUuid },
+    });
+
+    const category = await this.categoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.products', 'products')
+      .where('category.uuid = :uuid', { uuid: categoryUuid })
+      .getOne();
+
+    if (!product) {
+      throw new HttpException('Product was not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (!category) {
+      throw new HttpException('Category was not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (category.products && category.products.length > 0) {
+      category.products = [...category.products, product];
+    } else {
+      category.products = [product];
+    }
+
+    await this.categoryRepository.save(category);
+
+    return true;
+  }
+
+  async removeFromCategory(productUuid: string, categoryUuid: string) {
+    const product = await this.productRepository.findOne({
+      where: { uuid: productUuid },
+    });
+
+    const category = await this.categoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.products', 'products')
+      .where('category.uuid = :uuid', { uuid: categoryUuid })
+      .getOne();
+
+    if (!product) {
+      throw new HttpException('Product was not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (!category) {
+      throw new HttpException('Category was not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (category.products) {
+      category.products = category.products.filter(
+        (product: Product) => product.uuid !== productUuid,
+      );
+
+      await this.categoryRepository.save(category);
+    }
 
     return true;
   }
