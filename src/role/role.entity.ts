@@ -2,37 +2,20 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import Category from 'src/category/category.entity';
 
 @Entity()
-export default class Product {
+export default class Role {
   @PrimaryGeneratedColumn()
   uuid: string;
 
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: false })
-  subscription: string;
-
-  @Column({ nullable: true })
-  picture: string;
-
-  @Column({ nullable: false, default: 0 })
-  cost: number;
-
-  @Column({ nullable: false })
-  drink: boolean;
-
-  @Column({ nullable: false, default: 0 })
-  count: number;
-
-  @ManyToMany(() => Category)
-  categories: Category[];
+  @Column({ nullable: false, default: false })
+  default: boolean;
 
   @UpdateDateColumn({
     type: 'timestamp',

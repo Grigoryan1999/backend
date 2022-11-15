@@ -2,37 +2,33 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import Category from 'src/category/category.entity';
+import Role from 'src/role/role.entity';
 
 @Entity()
-export default class Product {
+export default class User {
   @PrimaryGeneratedColumn()
   uuid: string;
+
+  @Column({ nullable: false })
+  login: string;
+
+  @Column({ nullable: false })
+  email: string;
 
   @Column({ nullable: false })
   name: string;
 
   @Column({ nullable: false })
-  subscription: string;
+  password: string;
 
-  @Column({ nullable: true })
-  picture: string;
-
-  @Column({ nullable: false, default: 0 })
-  cost: number;
-
-  @Column({ nullable: false })
-  drink: boolean;
-
-  @Column({ nullable: false, default: 0 })
-  count: number;
-
-  @ManyToMany(() => Category)
-  categories: Category[];
+  @OneToOne(() => Role)
+  @JoinColumn()
+  role: Role;
 
   @UpdateDateColumn({
     type: 'timestamp',

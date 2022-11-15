@@ -8,6 +8,7 @@ export class createCategoryTable1668430869532 implements MigrationInterface {
       "name" varchar NOT NULL,
       "subscription" varchar NOT NULL,
       updated_at timestamp NOT NULL DEFAULT 'now'::text::timestamp(6) with time zone,
+      created_at timestamp NOT NULL DEFAULT 'now'::text::timestamp(6) with time zone,
       CONSTRAINT "PK_86ee096735ccbfa3fd319af1833" PRIMARY KEY (uuid)
     );`,
     );
