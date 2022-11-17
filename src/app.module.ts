@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configuration } from 'ormconfig';
 import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
+import { MarketModule } from './market/market.module';
+import { MarketProductModule } from './market-product/market-product.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { UserModule } from './user/user.module';
     CategoryModule,
     RoleModule,
     UserModule,
+    MarketModule,
+    MarketProductModule,
   ],
   controllers: [],
   providers: [],
