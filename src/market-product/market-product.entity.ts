@@ -18,6 +18,12 @@ export default class MarketProduct {
   @Column({ nullable: false, default: 0 })
   count: number;
 
+  @Column({ nullable: false, default: 0 })
+  cost: number;
+
+  @Column({ nullable: false, default: 0 })
+  discount: number;
+
   @ManyToOne(() => Product)
   @JoinColumn()
   product: Product;

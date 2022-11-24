@@ -1,3 +1,4 @@
+import { USER_ROLES } from './../shared/const';
 import {
   Column,
   CreateDateColumn,
@@ -12,7 +13,7 @@ export default class Role {
   uuid: string;
 
   @Column({ nullable: false })
-  name: string;
+  name: USER_ROLES;
 
   @Column({ nullable: false, default: false })
   default: boolean;

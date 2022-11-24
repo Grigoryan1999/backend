@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { TokenGuard } from 'src/token/token.guard';
 import CategoryDto from './market.dto';
 import { MarketService } from './market.service';
 
@@ -28,6 +30,7 @@ export class MarketController {
     return response;
   }
 
+  @UseGuards(TokenGuard)
   @Post()
   async create(@Body() body: CategoryDto) {
     const market = await this.marketService.create(body);
@@ -36,12 +39,14 @@ export class MarketController {
     };
   }
 
+  @UseGuards(TokenGuard)
   @Put(':uuid')
   async update(@Param('uuid') uuid: string, @Body() body: CategoryDto) {
     const response = await this.marketService.update(uuid, body);
     return response;
   }
 
+  @UseGuards(TokenGuard)
   @Delete(':uuid')
   async deleteById(@Param('uuid') uuid: string) {
     const response = await this.marketService.deleteById(uuid);

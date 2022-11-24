@@ -30,6 +30,12 @@ export class marketTableWasCreated1668684423362 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE public.market_product ADD CONSTRAINT "FK_f6197dafe11f5b1cbaebe80011f" FOREIGN KEY ("productUuid") REFERENCES public.product(uuid);`,
     );
+    await queryRunner.query(
+      'ALTER TABLE public.market_product ADD COLUMN "cost" TYPE integer DEFAULT 0',
+    );
+    await queryRunner.query(
+      'ALTER TABLE public.market_product ADD COLUMN "discount" TYPE integer DEFAULT 0',
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -40,6 +46,12 @@ export class marketTableWasCreated1668684423362 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE public.market_product DROP CONSTRAINT "FK_f6197dafe11f5b1cbaebe80011f"`,
+    );
+    await queryRunner.query(
+      'ALTER TABLE public.market_product DROP COLUMN "cost"',
+    );
+    await queryRunner.query(
+      'ALTER TABLE public.market_product DROP COLUMN "discount"',
     );
   }
 }

@@ -7,6 +7,7 @@ import { RoleModule } from './role/role.module';
 import { UserModule } from './user/user.module';
 import { MarketModule } from './market/market.module';
 import { MarketProductModule } from './market-product/market-product.module';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MarketProductModule } from './market-product/market-product.module';
     UserModule,
     MarketModule,
     MarketProductModule,
+    TokenModule,
   ],
   controllers: [],
   providers: [],
