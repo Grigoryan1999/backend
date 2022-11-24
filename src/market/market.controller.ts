@@ -9,49 +9,47 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TokenGuard } from 'src/token/token.guard';
-import CategoryDto from './category.dto';
-import { CategoryService } from './category.service';
+import CategoryDto from './market.dto';
+import { MarketService } from './market.service';
 
-@Controller('api/category')
-export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+@Controller('api/market')
+export class MarketController {
+  constructor(private readonly marketService: MarketService) {}
 
   @Get('all')
   async getAll() {
-    const categories = await this.categoryService.getAll();
+    const markets = await this.marketService.getAll();
     return {
-      categories,
+      markets,
     };
   }
 
   @Get(':uuid')
   async getByUuid(@Param('uuid') uuid: string) {
-    const categories = await this.categoryService.getByUuid(uuid);
-    return {
-      categories,
-    };
+    const response = await this.marketService.getByUuid(uuid);
+    return response;
   }
 
   @UseGuards(TokenGuard)
   @Post()
   async create(@Body() body: CategoryDto) {
-    const category = await this.categoryService.create(body);
+    const market = await this.marketService.create(body);
     return {
-      category,
+      market,
     };
   }
 
   @UseGuards(TokenGuard)
   @Put(':uuid')
   async update(@Param('uuid') uuid: string, @Body() body: CategoryDto) {
-    const response = await this.categoryService.update(uuid, body);
+    const response = await this.marketService.update(uuid, body);
     return response;
   }
 
   @UseGuards(TokenGuard)
   @Delete(':uuid')
   async deleteById(@Param('uuid') uuid: string) {
-    const response = await this.categoryService.deleteById(uuid);
+    const response = await this.marketService.deleteById(uuid);
     return response;
   }
 }

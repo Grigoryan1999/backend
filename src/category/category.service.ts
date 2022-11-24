@@ -14,7 +14,7 @@ export class CategoryService {
   async getAll() {
     const categories = await this.categoryRepository
       .createQueryBuilder('category')
-      .innerJoinAndSelect('category.products', 'products')
+      .leftJoinAndSelect('category.products', 'products')
       .getMany();
 
     return categories;

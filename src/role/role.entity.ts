@@ -1,3 +1,4 @@
+import { USER_ROLES } from './../shared/const';
 import {
   Column,
   CreateDateColumn,
@@ -7,21 +8,15 @@ import {
 } from 'typeorm';
 
 @Entity()
-export default class Product {
+export default class Role {
   @PrimaryGeneratedColumn()
   uuid: string;
 
   @Column({ nullable: false })
-  name: string;
+  name: USER_ROLES;
 
-  @Column({ nullable: false })
-  subscription: string;
-
-  @Column({ nullable: true })
-  picture: string;
-
-  @Column({ nullable: false })
-  drink: boolean;
+  @Column({ nullable: false, default: false })
+  default: boolean;
 
   @UpdateDateColumn({
     type: 'timestamp',

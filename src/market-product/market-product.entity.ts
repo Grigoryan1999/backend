@@ -1,28 +1,36 @@
+import Market from 'src/market/market.entity';
 import Product from 'src/product/product.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export default class Category {
+export default class MarketProduct {
   @PrimaryGeneratedColumn()
   uuid: string;
 
-  @Column({ nullable: false })
-  name: string;
+  @Column({ nullable: false, default: 0 })
+  count: number;
 
-  @Column({ nullable: false })
-  subscription: string;
+  @Column({ nullable: false, default: 0 })
+  cost: number;
 
-  @ManyToMany(() => Product)
-  @JoinTable()
-  products: Product[];
+  @Column({ nullable: false, default: 0 })
+  discount: number;
+
+  @ManyToOne(() => Product)
+  @JoinColumn()
+  product: Product;
+
+  @ManyToOne(() => Market)
+  @JoinColumn()
+  market: Market;
 
   @UpdateDateColumn({
     type: 'timestamp',

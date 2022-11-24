@@ -7,21 +7,18 @@ import {
 } from 'typeorm';
 
 @Entity()
-export default class Product {
+export default class Market {
   @PrimaryGeneratedColumn()
   uuid: string;
 
   @Column({ nullable: false })
-  name: string;
+  address: string;
 
   @Column({ nullable: false })
-  subscription: string;
-
-  @Column({ nullable: true })
-  picture: string;
+  latitude: number;
 
   @Column({ nullable: false })
-  drink: boolean;
+  longitude: number;
 
   @UpdateDateColumn({
     type: 'timestamp',
