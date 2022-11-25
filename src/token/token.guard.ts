@@ -20,7 +20,7 @@ export class TokenGuard implements CanActivate {
       const header = req.headers.authorization;
       const token = header.split(' ')[1];
 
-      const user = jwt.verify(token, 'key');
+      const user = jwt.verify(token, process.env.SECRECT_JWT);
       req.user = user;
 
       return true;

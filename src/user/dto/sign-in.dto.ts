@@ -1,9 +1,6 @@
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export default class SignInUserDto {
-  @IsOptional()
-  readonly name: string;
-
   @IsNotEmpty()
   @IsEmail()
   readonly email: string;

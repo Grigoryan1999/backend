@@ -7,6 +7,7 @@ import User from './user.entity';
 import Role from 'src/role/role.entity';
 import { TokenService } from 'src/token/token.service';
 import SignInUserDto from './dto/sign-in.dto';
+import Token from 'src/token/token.entity';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,8 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
+    @InjectRepository(Token)
+    private tokenRepository: Repository<Token>,
     private readonly tokenService: TokenService,
   ) {}
 
@@ -46,19 +49,17 @@ export class UserService {
 
     await this.userRepository.save(newUser);
 
-    const tokens = this.tokenService.generateTokens({
-      uuid: newUser.uuid,
+    return this.login({
       email: newUser.email,
-      role: role.name,
+      password: body.password,
     });
-
-    return tokens;
   }
 
   async login(body: SignInUserDto) {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
+      .where('user.email = :email', { email: body.email })
       .getOne();
 
     if (!user) {
@@ -75,18 +76,44 @@ export class UserService {
       );
     }
 
-    const tokens = this.tokenService.generateTokens({
-      uuid: user.uuid,
-      email: user.email,
-      role: user.role.name,
-    });
-
-    return tokens;
+    return await this.getTokensAndSave(user);
   }
 
   private hashPassword(password: string) {
     const hash = bcrypt.hashSync(password, 1);
 
     return hash;
+  }
+
+  private async getTokensAndSave(user: User) {
+    const token = await this.tokenRepository
+      .createQueryBuilder('token')
+      .leftJoinAndSelect('token.user', 'user')
+      .where('user.uuid = :uuid', { uuid: user.uuid })
+      .getOne();
+
+    const tokens = this.tokenService.generateTokens({
+      uuid: user.uuid,
+      email: user.email,
+      role: user.role.name,
+    });
+
+    if (token) {
+      await this.tokenRepository.update(
+        { uuid: token.uuid },
+        {
+          token: tokens.refreshToken,
+        },
+      );
+    } else {
+      const newToken = await this.tokenRepository.create({
+        user,
+        token: tokens.refreshToken,
+      });
+
+      await this.tokenRepository.save(newToken);
+    }
+
+    return tokens;
   }
 }
