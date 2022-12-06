@@ -18,8 +18,8 @@ export class TokenService {
 
   generateTokens(payload: TokenPayloadDto) {
     const privateKey = process.env.SECRECT_JWT;
-    const accessToken = jwt.sign(payload, privateKey, { expiresIn: '1m' });
-    const refreshToken = jwt.sign(payload, privateKey, { expiresIn: '2m' });
+    const accessToken = jwt.sign(payload, privateKey, { expiresIn: '2m' });
+    const refreshToken = jwt.sign(payload, privateKey, { expiresIn: '30d' });
 
     return {
       accessToken,
@@ -44,7 +44,7 @@ export class TokenService {
       const userInfo: ITokenPayload = jwt.verify(
         token,
         process.env.SECRECT_JWT,
-      ) as TokenPayloadDto;
+      ) as ITokenPayload;
 
       const user = await this.userRepository
         .createQueryBuilder('user')

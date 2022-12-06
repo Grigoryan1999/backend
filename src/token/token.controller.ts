@@ -11,7 +11,6 @@ export class TokenController {
     @Req() request: Request,
     @Query('refresh') refreshToken: string,
   ) {
-    console.log(refreshToken);
     const response = this.tokenService.refresh(
       refreshToken,
       request.cookies.refreshToken,
