@@ -16,6 +16,7 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @UseGuards(TokenGuard)
   @Get('all')
   async getAll() {
     const products = await this.productService.getAll();
