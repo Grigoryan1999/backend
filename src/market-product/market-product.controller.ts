@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MarketProductService } from './market-product.service';
-import CategoryDto from './market-product.dto';
+import MarketProductDto from './dto/market-product.dto';
 import { Roles } from 'src/role/role.decorator';
 import { RoleGuard } from 'src/role/role.guard';
 import { USER_ROLES } from 'src/shared/const';
@@ -40,7 +40,7 @@ export class MarketProductController {
   @UseGuards(RoleGuard)
   @Post()
   async create(
-    @Body() body: CategoryDto,
+    @Body() body: MarketProductDto,
   ): Promise<IStandartResponse<IDetailedMarketProduct>> {
     const marketProduct = await this.marketProductService.create(body);
     return {
@@ -52,8 +52,23 @@ export class MarketProductController {
   @Roles(USER_ROLES.ADMIN, USER_ROLES.MARKET_OWNER)
   @UseGuards(RoleGuard)
   @Put(':uuid')
-  async update(@Param('uuid') uuid: string, @Body() body: CategoryDto) {
+  async update(@Param('uuid') uuid: string, @Body() body: MarketProductDto) {
     const response = await this.marketProductService.update(uuid, body);
+    return response;
+  }
+
+  @ApiBearerAuth()
+  @Roles(USER_ROLES.CASHIER)
+  @UseGuards(RoleGuard)
+  @Put(':uuid')
+  async updateCount(
+    @Param('uuid') uuid: string,
+    @Body() body: MarketProductDto,
+  ) {
+    const response = await this.marketProductService.updateProductCount(
+      uuid,
+      body,
+    );
     return response;
   }
 

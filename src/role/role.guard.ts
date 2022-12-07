@@ -39,7 +39,7 @@ export class RoleGuard implements CanActivate {
 
       return requiredRoles.includes(user.role);
     } catch (e) {
-      throw new HttpException('Forbiden resource', HttpStatus.FORBIDDEN);
+      throw new HttpException('Forbiden resource', HttpStatus.UNAUTHORIZED);
     }
   }
 }
