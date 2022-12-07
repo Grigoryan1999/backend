@@ -1,8 +1,12 @@
+import {
+  IDetailedMarketProduct,
+  IDetailedMarketProductWithMarket,
+} from './../shared/entities';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import MarketProduct from 'src/market-product/market-product.entity';
-import MarketProductDto from './market-product.dto';
+import MarketProductDto from './dto/market-product.dto';
 import Market from 'src/market/market.entity';
 import Product from 'src/product/product.entity';
 
@@ -17,7 +21,7 @@ export class MarketProductService {
     private marketProductRepository: Repository<MarketProduct>,
   ) {}
 
-  async getAll() {
+  async getAll(): Promise<IDetailedMarketProductWithMarket[]> {
     const marketProducts = await this.marketProductRepository
       .createQueryBuilder('marketProduct')
       .leftJoinAndSelect('marketProduct.product', 'product')
@@ -27,7 +31,9 @@ export class MarketProductService {
     return marketProducts;
   }
 
-  async create(marketProduct: MarketProductDto) {
+  async create(
+    marketProduct: MarketProductDto,
+  ): Promise<IDetailedMarketProduct> {
     const market = await this.marketRepository.findOne({
       where: { uuid: marketProduct.marketUuid },
     });
@@ -71,7 +77,10 @@ export class MarketProductService {
     return newMarketProduct;
   }
 
-  async update(uuid: string, marketProduct: MarketProductDto) {
+  async update(
+    uuid: string,
+    marketProduct: MarketProductDto,
+  ): Promise<boolean> {
     const updatedMarketProduct = await this.marketProductRepository.findOne({
       where: { uuid },
     });
@@ -94,17 +103,23 @@ export class MarketProductService {
       throw new HttpException('Market was not found', HttpStatus.NOT_FOUND);
     }
 
-    await this.marketProductRepository.update(
-      { uuid },
-      {
-        count: marketProduct.count,
-      },
-    );
+    await this.marketProductRepository.update({ uuid }, marketProduct);
 
     return true;
   }
 
-  async deleteById(uuid: string) {
+  async updateProductCount(
+    uuid: string,
+    marketProduct: MarketProductDto,
+  ): Promise<boolean> {
+    return this.update(uuid, {
+      marketUuid: marketProduct.marketUuid,
+      productUuid: marketProduct.productUuid,
+      count: marketProduct.cost,
+    });
+  }
+
+  async deleteById(uuid: string): Promise<boolean> {
     const deletedMarketProduct = await this.marketProductRepository.findOne({
       where: { uuid },
     });

@@ -1,9 +1,11 @@
+import { IMarketWithProducts } from './../shared/entities';
 import MarketProduct from 'src/market-product/market-product.entity';
 import Market from 'src/market/market.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import MarketDto from './market.dto';
+import { IDetailedMarket } from 'src/shared/entities';
 
 @Injectable()
 export class MarketService {
@@ -14,7 +16,7 @@ export class MarketService {
     private marketProductRepository: Repository<MarketProduct>,
   ) {}
 
-  async getAll() {
+  async getAll(): Promise<IDetailedMarket[]> {
     const markets = await this.marketRepository
       .createQueryBuilder('market')
       .getMany();
@@ -22,7 +24,7 @@ export class MarketService {
     return markets;
   }
 
-  async getByUuid(uuid: string) {
+  async getByUuid(uuid: string): Promise<IMarketWithProducts> {
     const market = await this.marketRepository
       .createQueryBuilder('market')
       .where('market.uuid = :uuid', { uuid })
@@ -44,7 +46,7 @@ export class MarketService {
     };
   }
 
-  async create(market: MarketDto) {
+  async create(market: MarketDto): Promise<IDetailedMarket> {
     const newMarket = await this.marketRepository.create({
       address: market.address,
       latitude: market.latitude,
@@ -56,7 +58,7 @@ export class MarketService {
     return newMarket;
   }
 
-  async update(uuid: string, market: MarketDto) {
+  async update(uuid: string, market: MarketDto): Promise<boolean> {
     const updatedMarket = await this.marketRepository.findOne({
       where: { uuid },
     });
@@ -77,7 +79,7 @@ export class MarketService {
     return true;
   }
 
-  async deleteById(uuid: string) {
+  async deleteById(uuid: string): Promise<boolean> {
     const deletedMarket = await this.marketRepository.findOne({
       where: { uuid },
     });

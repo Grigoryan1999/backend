@@ -1,14 +1,23 @@
+import { IDetailedToken } from './../shared/entities';
 import { TokenService } from 'src/token/token.service';
-import { Body, Controller, Post } from '@nestjs/common';
-import TokenDto from './dto/token.dto';
+import { Controller, Get, Query, Req } from '@nestjs/common';
+import { Request } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Token')
 @Controller('api/token')
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
 
-  @Post('refresh')
-  async refresh(@Body() body: TokenDto) {
-    const response = this.tokenService.refresh(body);
+  @Get()
+  async refresh(
+    @Req() request: Request,
+    @Query('refresh') refreshToken: string,
+  ): Promise<IDetailedToken> {
+    const response = this.tokenService.refresh(
+      refreshToken,
+      request.cookies.refreshToken,
+    );
     return response;
   }
 }

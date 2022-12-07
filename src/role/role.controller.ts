@@ -1,3 +1,4 @@
+import { IDetailedRole, IStandartResponse } from './../shared/entities';
 import { RoleService } from './role.service';
 import {
   Body,
@@ -10,39 +11,54 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import RoleDto from './role.dto';
-import { TokenGuard } from 'src/token/token.guard';
+import { RoleGuard } from './role.guard';
+import { Roles } from './role.decorator';
+import { USER_ROLES } from 'src/shared/const';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Role')
+@ApiBearerAuth()
 @Controller('api/role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
   @Get('all')
-  async getAll() {
+  async getAll(): Promise<IStandartResponse<IDetailedRole[]>> {
     const roles = await this.roleService.getAll();
     return {
-      roles,
+      message: roles,
     };
   }
 
-  @UseGuards(TokenGuard)
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
   @Post()
-  async create(@Body() body: RoleDto) {
+  async create(
+    @Body() body: RoleDto,
+  ): Promise<IStandartResponse<IDetailedRole>> {
     const role = await this.roleService.create(body);
     return {
-      role,
+      message: role,
     };
   }
 
-  @UseGuards(TokenGuard)
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
   @Put(':uuid')
-  async update(@Param('uuid') uuid: string, @Body() body: RoleDto) {
+  async update(
+    @Param('uuid') uuid: string,
+    @Body() body: RoleDto,
+  ): Promise<boolean> {
     const response = await this.roleService.update(uuid, body);
     return response;
   }
 
-  @UseGuards(TokenGuard)
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
   @Delete(':uuid')
-  async deleteById(@Param('uuid') uuid: string) {
+  async deleteById(@Param('uuid') uuid: string): Promise<boolean> {
     const response = await this.roleService.deleteById(uuid);
     return response;
   }

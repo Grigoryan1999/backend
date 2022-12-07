@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import ProductDto from './product.dto';
 import Product from './product.entity';
 import Category from 'src/category/category.entity';
+import { IDetailedProduct } from 'src/shared/entities';
 
 @Injectable()
 export class ProductService {
@@ -14,7 +15,7 @@ export class ProductService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async getAll() {
+  async getAll(): Promise<IDetailedProduct[]> {
     const products = await this.productRepository
       .createQueryBuilder('product')
       .getMany();

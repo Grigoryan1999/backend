@@ -1,3 +1,4 @@
+import { IDetailedRole } from './../shared/entities';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,7 +12,7 @@ export class RoleService {
     private roleRepository: Repository<Role>,
   ) {}
 
-  async getAll() {
+  async getAll(): Promise<IDetailedRole[]> {
     const roles = await this.roleRepository
       .createQueryBuilder('role')
       .getMany();
@@ -19,7 +20,7 @@ export class RoleService {
     return roles;
   }
 
-  async create(role: RoleDto) {
+  async create(role: RoleDto): Promise<IDetailedRole> {
     const newRole = await this.roleRepository.create({
       name: role.name,
       default: role.default,
@@ -30,7 +31,7 @@ export class RoleService {
     return newRole;
   }
 
-  async update(uuid: string, role: RoleDto) {
+  async update(uuid: string, role: RoleDto): Promise<boolean> {
     const updatedRole = await this.roleRepository.findOne({
       where: { uuid },
     });
@@ -50,7 +51,7 @@ export class RoleService {
     return true;
   }
 
-  async deleteById(uuid: string) {
+  async deleteById(uuid: string): Promise<boolean> {
     const deletedRole = await this.roleRepository.findOne({
       where: { uuid },
     });

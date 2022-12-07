@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export default class MarketProductDto {
   @IsNotEmpty()
@@ -7,6 +7,12 @@ export default class MarketProductDto {
   @IsNotEmpty()
   readonly productUuid: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   readonly count: number;
+
+  @IsOptional()
+  readonly cost?: number;
+
+  @IsOptional()
+  readonly discount?: number;
 }
