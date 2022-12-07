@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import Token from 'src/token/token.entity';
-import { ITokenPayload } from './../shared/entities';
+import { ITokenPayload, IDetailedToken } from './../shared/entities';
 import TokenPayloadDto from './dto/token-payload.dto';
 import User from 'src/user/user.entity';
 
@@ -16,7 +16,7 @@ export class TokenService {
     private userRepository: Repository<User>,
   ) {}
 
-  generateTokens(payload: TokenPayloadDto) {
+  generateTokens(payload: TokenPayloadDto): IDetailedToken {
     const privateKey = process.env.SECRECT_JWT;
     const accessToken = jwt.sign(payload, privateKey, { expiresIn: '2m' });
     const refreshToken = jwt.sign(payload, privateKey, { expiresIn: '30d' });
@@ -27,7 +27,10 @@ export class TokenService {
     };
   }
 
-  async refresh(tokenFromRequest: string, tokenFromCookies: string) {
+  async refresh(
+    tokenFromRequest: string,
+    tokenFromCookies: string,
+  ): Promise<IDetailedToken> {
     try {
       const token = tokenFromCookies ?? tokenFromRequest;
       const refreshToken = await this.tokenRepository.findOne({

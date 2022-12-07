@@ -8,47 +8,68 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { TokenGuard } from 'src/token/token.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/role/role.decorator';
+import { RoleGuard } from 'src/role/role.guard';
+import { USER_ROLES } from 'src/shared/const';
 import CategoryDto from './market.dto';
 import { MarketService } from './market.service';
+import { IDetailedMarket } from 'src/shared/entities';
+import { IMarketWithProducts, IStandartResponse } from './../shared/entities';
 
+@ApiTags('Market')
 @Controller('api/market')
 export class MarketController {
   constructor(private readonly marketService: MarketService) {}
 
   @Get('all')
-  async getAll() {
+  async getAll(): Promise<IStandartResponse<IDetailedMarket[]>> {
     const markets = await this.marketService.getAll();
     return {
-      markets,
+      message: markets,
     };
   }
 
   @Get(':uuid')
-  async getByUuid(@Param('uuid') uuid: string) {
+  async getByUuid(
+    @Param('uuid') uuid: string,
+  ): Promise<IStandartResponse<IMarketWithProducts>> {
     const response = await this.marketService.getByUuid(uuid);
-    return response;
-  }
-
-  @UseGuards(TokenGuard)
-  @Post()
-  async create(@Body() body: CategoryDto) {
-    const market = await this.marketService.create(body);
     return {
-      market,
+      message: response,
     };
   }
 
-  @UseGuards(TokenGuard)
+  @ApiBearerAuth()
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
+  @Post()
+  async create(
+    @Body() body: CategoryDto,
+  ): Promise<IStandartResponse<IDetailedMarket>> {
+    const market = await this.marketService.create(body);
+    return {
+      message: market,
+    };
+  }
+
+  @ApiBearerAuth()
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
   @Put(':uuid')
-  async update(@Param('uuid') uuid: string, @Body() body: CategoryDto) {
+  async update(
+    @Param('uuid') uuid: string,
+    @Body() body: CategoryDto,
+  ): Promise<boolean> {
     const response = await this.marketService.update(uuid, body);
     return response;
   }
 
-  @UseGuards(TokenGuard)
+  @ApiBearerAuth()
+  @Roles(USER_ROLES.ADMIN)
+  @UseGuards(RoleGuard)
   @Delete(':uuid')
-  async deleteById(@Param('uuid') uuid: string) {
+  async deleteById(@Param('uuid') uuid: string): Promise<boolean> {
     const response = await this.marketService.deleteById(uuid);
     return response;
   }

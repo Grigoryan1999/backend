@@ -8,6 +8,7 @@ import Role from 'src/role/role.entity';
 import { TokenService } from 'src/token/token.service';
 import SignInUserDto from './dto/sign-in.dto';
 import Token from 'src/token/token.entity';
+import { IDetailedToken } from './../shared/entities';
 
 @Injectable()
 export class UserService {
@@ -21,7 +22,7 @@ export class UserService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async registration(body: SignUpUserDto) {
+  async registration(body: SignUpUserDto): Promise<IDetailedToken> {
     const user = await this.userRepository.findOne({
       where: [{ login: body.login }, { email: body.email }],
     });
@@ -55,7 +56,7 @@ export class UserService {
     });
   }
 
-  async login(body: SignInUserDto) {
+  async login(body: SignInUserDto): Promise<IDetailedToken> {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
