@@ -1,7 +1,10 @@
+import MarketProduct from 'src/market-product/market-product.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +25,10 @@ export default class Product {
 
   @Column({ nullable: false })
   drink: boolean;
+
+  @OneToMany(() => MarketProduct, (marketProduct) => marketProduct.product)
+  @JoinColumn()
+  marketProduct: MarketProduct;
 
   @UpdateDateColumn({
     type: 'timestamp',
