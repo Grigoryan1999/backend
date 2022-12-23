@@ -1,8 +1,11 @@
-import Category from 'src/category/category.entity';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { IProductWithCost } from './../shared/entities';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import Category from 'src/category/category.entity';
 import CategoryDto from './category.dto';
+import MarketProduct from 'src/market-product/market-product.entity';
+import { ICategoryWithCost } from 'src/shared/entities';
 
 @Injectable()
 export class CategoryService {
@@ -19,7 +22,19 @@ export class CategoryService {
       .leftJoinAndSelect('marketProducts.market', 'markets')
       .getMany();
 
-    return categories;
+    for (let i = 0; i < categories.length; i++) {
+      for (let j = 0; j < categories[i].products.length; j++) {
+        let minimalCost = 0;
+        minimalCost = categories[i].products[j].marketProduct.reduce(
+          (accumulator: number, current: MarketProduct) => {
+            return current.cost < accumulator ? current.cost : accumulator;
+          },
+          minimalCost,
+        );
+      }
+    }
+
+    return categories.map(this.detailedCategoryBuilder);
   }
 
   async getByUuid(uuid: string) {
@@ -80,4 +95,41 @@ export class CategoryService {
 
     return true;
   }
+
+  private detailedCategoryBuilder = (category: Category): ICategoryWithCost => {
+    const productList: IProductWithCost[] = [];
+    for (let i = 0; i < category.products.length; i++) {
+      let minimalCost = 0;
+      minimalCost = category.products[i].marketProduct.reduce(
+        (accumulator: number, current: MarketProduct) => {
+          return current.cost < accumulator || accumulator === 0
+            ? current.cost
+            : accumulator;
+        },
+        minimalCost,
+      );
+
+      productList.push({
+        uuid: category.products[i].uuid,
+        name: category.products[i].name,
+        subscription: category.products[i].subscription,
+        picture: category.products[i].picture,
+        drink: category.products[i].drink,
+        updated_at: category.products[i].updated_at,
+        created_at: category.products[i].created_at,
+        marketProduct: [...category.products[i].marketProduct],
+        minimalCost,
+      });
+    }
+
+    const newCategory: ICategoryWithCost = {
+      uuid: category.uuid,
+      name: category.name,
+      subscription: category.subscription,
+      updated_at: category.updated_at,
+      created_at: category.created_at,
+      products: [...productList],
+    };
+    return newCategory;
+  };
 }

@@ -4,3 +4,10 @@ export enum USER_ROLES {
   MARKET_OWNER = 'MARKET_OWNER',
   ADMIN = 'ADMIN',
 }
+
+export enum ORDER_STATUS {
+  WAITING,
+  ACCEPTED,
+  EXITED,
+  RELECTED,
+}
