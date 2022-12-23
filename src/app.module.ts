@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { MarketModule } from './market/market.module';
 import { MarketProductModule } from './market-product/market-product.module';
 import { TokenModule } from './token/token.module';
+import { BidModule } from './bid/bid.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TokenModule } from './token/token.module';
     MarketModule,
     MarketProductModule,
     TokenModule,
+    BidModule,
   ],
   controllers: [],
   providers: [],

@@ -1,34 +1,37 @@
-import MarketProduct from 'src/market-product/market-product.entity';
+import BidProduct from 'src/bid_product/bid_product.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToMany,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export default class Product {
+export default class Bid {
   @PrimaryGeneratedColumn()
   uuid: string;
 
   @Column({ nullable: false })
-  name: string;
+  fio: string;
 
   @Column({ nullable: false })
-  subscription: string;
-
-  @Column({ nullable: true })
-  picture: string;
+  comment: string;
 
   @Column({ nullable: false })
-  drink: boolean;
+  tel: string;
 
-  @OneToMany(() => MarketProduct, (marketProduct) => marketProduct.product)
-  @JoinColumn()
-  marketProduct: MarketProduct[];
+  @Column({ nullable: false, default: 0 })
+  status: number;
+
+  @Column({ nullable: false, type: 'timestamp' })
+  endDate: string;
+
+  @ManyToMany(() => BidProduct)
+  @JoinTable()
+  products: BidProduct[];
 
   @UpdateDateColumn({
     type: 'timestamp',

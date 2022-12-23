@@ -1,3 +1,4 @@
+import MarketProduct from 'src/market-product/market-product.entity';
 export interface ITokenPayload {
   uuid: string;
   email: string;
@@ -47,6 +48,22 @@ export interface IDetailedCategory {
   products: IDetailedProduct[];
 }
 
+export interface IDetailedBid {
+  uuid: string;
+  fio: string;
+  comment: string;
+  endDate: string;
+  updated_at: string;
+  created_at: string;
+  products: IDetailetBidProduct[];
+}
+
+export interface IDetailetBidProduct {
+  uuid: string;
+  count: number;
+  product: IDetailedProduct;
+}
+
 export interface IDetailedMarket {
   uuid: string;
   address: string;
@@ -72,4 +89,25 @@ export interface IDetailedRole {
 export interface IDetailedToken {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface ICategoryWithCost {
+  uuid: string;
+  name: string;
+  subscription: string;
+  updated_at: string;
+  created_at: string;
+  products: IProductWithCost[];
+}
+
+export interface IProductWithCost {
+  uuid: string;
+  name: string;
+  subscription: string;
+  picture: string;
+  drink: boolean;
+  updated_at: string;
+  created_at: string;
+  minimalCost: number;
+  marketProduct: MarketProduct[];
 }
