@@ -71,13 +71,24 @@ export class UserService {
     }
 
     if (!bcrypt.compareSync(body.password, user.password)) {
-      throw new HttpException(
-        'Wrong email or password',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException('Wrong email or password', HttpStatus.FORBIDDEN);
     }
 
     return await this.getTokensAndSave(user);
+  }
+
+  async getUserInfo(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['email', 'name', 'login', 'uuid'],
+      relations: ['role'],
+    });
+
+    if (!user) {
+      throw new HttpException('User was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return user;
   }
 
   private hashPassword(password: string) {

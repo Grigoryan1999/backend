@@ -20,8 +20,7 @@ export class userTablesWereMade1668519122727 implements MigrationInterface {
         updated_at timestamp NOT NULL DEFAULT 'now'::text::timestamp(6) with time zone,
         created_at timestamp NOT NULL DEFAULT 'now'::text::timestamp(6) with time zone,
         "roleUuid" int4 NULL,
-        CONSTRAINT "PK_a95e949168be7b7ece1a2382fed" PRIMARY KEY (uuid),
-        CONSTRAINT "REL_8ffce172fb81226c738cef01e3" UNIQUE ("roleUuid")
+        CONSTRAINT "PK_a95e949168be7b7ece1a2382fed" PRIMARY KEY (uuid)
       );`,
     );
     await queryRunner.query(
@@ -30,9 +29,6 @@ export class userTablesWereMade1668519122727 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "user" DROP CONSTRAINT "FK_8ffce172fb81226c738cef01e31"`,
-    );
     await queryRunner.query(`DROP TABLE IF EXISTS public."role"`);
     await queryRunner.query(`DROP TABLE IF EXISTS public."user"`);
   }

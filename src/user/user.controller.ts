@@ -1,10 +1,21 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { TokenGuard } from './../token/token.guard';
 import SignUpUserDto from './dto/sign-up.dto';
-import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
 import SignInUserDto from './dto/sign-in.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { IDetailedToken } from 'src/shared/entities';
+import { IDetailedToken, IStandartResponse } from 'src/shared/entities';
+import User from './user.entity';
 
 @ApiTags('User')
 @Controller('api/user')
@@ -37,5 +48,15 @@ export class UserController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return response;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(TokenGuard)
+  @Get('my')
+  async getUserInfo(@Req() req): Promise<IStandartResponse<User>> {
+    const user = await this.userService.getUserInfo(req.user.email);
+    return {
+      message: user,
+    };
   }
 }
