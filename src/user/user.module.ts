@@ -6,10 +6,11 @@ import { UserController } from './user.controller';
 import User from './user.entity';
 import { UserService } from './user.service';
 import Role from 'src/role/role.entity';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [UserController],
   providers: [UserService, TokenService],
-  imports: [TypeOrmModule.forFeature([User, Role, Token])],
+  imports: [TypeOrmModule.forFeature([User, Role, Token]), HttpModule],
 })
 export class UserModule {}

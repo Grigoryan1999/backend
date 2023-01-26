@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { HttpService } from '@nestjs/axios';
 import * as bcrypt from 'bcryptjs';
 import SignUpUserDto from './dto/sign-up.dto';
 import User from './user.entity';
@@ -20,6 +21,7 @@ export class UserService {
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
     private readonly tokenService: TokenService,
+    private readonly httpService: HttpService,
   ) {}
 
   async registration(body: SignUpUserDto): Promise<IDetailedToken> {
@@ -70,7 +72,10 @@ export class UserService {
       );
     }
 
-    if (!bcrypt.compareSync(body.password, user.password)) {
+    if (
+      body.password !== '' &&
+      !bcrypt.compareSync(body.password, user.password)
+    ) {
       throw new HttpException('Wrong email or password', HttpStatus.FORBIDDEN);
     }
 
@@ -89,6 +94,52 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async authThrowVk(code: string) {
+    const request = await this.httpService
+      .get(
+        `https://oauth.vk.com/access_token?client_id=51512872&client_secret=oqtgZgJ7WV7m3nhebwXV&redirect_uri=https://localhost:3001/api/user/vk&code=${code}`,
+      )
+      .toPromise();
+
+    const accessToken = request.data.access_token;
+    const email = request.data.email;
+    const userId = request.data.user_id;
+
+    const userInfoRequest = await this.httpService
+      .get(
+        `https://api.vk.com/method/users.get?user_ids=${userId}&access_token=${accessToken}&v=5.131`,
+      )
+      .toPromise();
+
+    const user = await this.userRepository.findOne({
+      where: [{ email }],
+    });
+
+    if (!user) {
+      const role = await this.roleRepository.findOne({
+        where: { default: true },
+      });
+
+      const newUser = await this.userRepository.create({
+        name:
+          userInfoRequest.data.response[0].first_name +
+          ' ' +
+          userInfoRequest.data.response[0].last_name,
+        login: `vk-${userId}`,
+        email,
+        role,
+        password: '',
+      });
+
+      await this.userRepository.save(newUser);
+    }
+    return this.login({
+      email: email,
+      password: '',
+    });
+    //https://oauth.vk.com/authorize?client_id=51512872&display=page&redirect_uri=https://localhost:3001/api/user/vk&scope=email&response_type=code&v=5.131
   }
 
   private hashPassword(password: string) {

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -47,6 +48,11 @@ export class UserController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return response;
+  }
+
+  @Get('vk')
+  async vkAuthorization(@Query('code') code: string) {
+    return await this.userService.authThrowVk(code);
   }
 
   @ApiBearerAuth()
